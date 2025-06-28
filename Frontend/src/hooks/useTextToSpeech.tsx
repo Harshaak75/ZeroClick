@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 
 export const useTextToSpeech = () => {
@@ -6,36 +5,45 @@ export const useTextToSpeech = () => {
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
 
   useEffect(() => {
+    if (!('speechSynthesis' in window)) {
+      console.warn('🔇 Speech synthesis is not supported on this platform.');
+      return;
+    }
+
     const loadVoices = () => {
-      const availableVoices = speechSynthesis.getVoices();
+      const availableVoices = window.speechSynthesis.getVoices();
       setVoices(availableVoices);
     };
 
     loadVoices();
-    speechSynthesis.addEventListener('voiceschanged', loadVoices);
+    window.speechSynthesis.addEventListener('voiceschanged', loadVoices);
 
     return () => {
-      speechSynthesis.removeEventListener('voiceschanged', loadVoices);
+      window.speechSynthesis.removeEventListener('voiceschanged', loadVoices);
     };
   }, []);
 
   const speak = (text: string, options?: { rate?: number; volume?: number }) => {
-    if (speechSynthesis.speaking) {
-      speechSynthesis.cancel();
+    if (!('speechSynthesis' in window)) {
+      console.warn('🔇 Speech synthesis is not available.');
+      return;
+    }
+
+    if (window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
     }
 
     const utterance = new SpeechSynthesisUtterance(text);
-    
-    // Find an English voice, preferably female for better accessibility
-    const englishVoice = voices.find(voice => 
+
+    const englishVoice = voices.find(voice =>
       voice.lang.includes('en') && voice.name.toLowerCase().includes('female')
     ) || voices.find(voice => voice.lang.includes('en'));
-    
+
     if (englishVoice) {
       utterance.voice = englishVoice;
     }
 
-    utterance.rate = options?.rate || 0.8; // Slower for elderly users
+    utterance.rate = options?.rate || 0.8;
     utterance.volume = options?.volume || 0.9;
     utterance.pitch = 1;
 
@@ -43,11 +51,13 @@ export const useTextToSpeech = () => {
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = () => setIsSpeaking(false);
 
-    speechSynthesis.speak(utterance);
+    window.speechSynthesis.speak(utterance);
   };
 
   const stop = () => {
-    speechSynthesis.cancel();
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
     setIsSpeaking(false);
   };
 
