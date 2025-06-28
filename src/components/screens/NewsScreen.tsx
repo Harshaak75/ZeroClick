@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Volume2 } from 'lucide-react';
 import BottomNavigation from '@/components/BottomNavigation';
+import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 
 interface NewsItem {
   id: string;
@@ -15,6 +16,7 @@ interface NewsItem {
 const NewsScreen = () => {
   const navigate = useNavigate();
   const [currentNews, setCurrentNews] = useState(0);
+  const { speak, isSpeaking } = useTextToSpeech();
   
   const news: NewsItem[] = [
     {
@@ -48,8 +50,9 @@ const NewsScreen = () => {
   ];
 
   const handleReadAloud = () => {
-    // Text-to-speech functionality would be implemented here
-    console.log('Reading news aloud...');
+    const currentItem = news[currentNews];
+    const textToRead = `${currentItem.category} news. ${currentItem.headline}. ${currentItem.summary}`;
+    speak(textToRead);
   };
 
   const nextNews = () => {
@@ -73,7 +76,7 @@ const NewsScreen = () => {
         <h1 className="text-2xl font-bold text-zeroclick-blue">📰 News</h1>
         <button 
           onClick={handleReadAloud}
-          className="bg-zeroclick-orange rounded-full p-3 shadow-md"
+          className={`bg-zeroclick-orange rounded-full p-3 shadow-md ${isSpeaking ? 'animate-pulse' : ''}`}
         >
           <Volume2 size={24} className="text-white" />
         </button>
@@ -128,7 +131,9 @@ const NewsScreen = () => {
 
             <button
               onClick={handleReadAloud}
-              className="bg-zeroclick-orange text-white px-6 py-3 rounded-full font-bold flex items-center space-x-2"
+              className={`bg-zeroclick-orange text-white px-6 py-3 rounded-full font-bold flex items-center space-x-2 ${
+                isSpeaking ? 'animate-pulse' : ''
+              }`}
             >
               <Volume2 size={20} />
               <span>🔈 Read Aloud</span>

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Volume2, QrCode, Clock } from 'lucide-react';
 import BottomNavigation from '@/components/BottomNavigation';
+import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 
 const SettingsScreen = () => {
   const navigate = useNavigate();
@@ -10,6 +11,16 @@ const SettingsScreen = () => {
   const [voiceSpeed, setVoiceSpeed] = useState(50);
   const [volume, setVolume] = useState(80);
   const [dailyBriefing, setDailyBriefing] = useState(true);
+  const [briefingTime, setBriefingTime] = useState('08:00');
+  const [briefingContent, setBriefingContent] = useState({
+    weather: true,
+    news: true,
+    horoscope: true,
+    healthTips: true,
+    reminders: true
+  });
+
+  const { speak } = useTextToSpeech();
 
   const languages = [
     { id: 'english', name: 'English', flag: '🇬🇧', nativeName: 'English' },
@@ -18,11 +29,19 @@ const SettingsScreen = () => {
   ];
 
   const handleTestVoice = () => {
-    console.log('Testing voice settings...');
+    const testMessage = `Hello! This is your voice assistant speaking at ${voiceSpeed}% speed and ${volume}% volume. How does this sound to you?`;
+    speak(testMessage, { rate: voiceSpeed / 100, volume: volume / 100 });
   };
 
   const handleQRScan = () => {
     console.log('Opening QR scanner for caregiver linking...');
+  };
+
+  const handleBriefingContentChange = (content: keyof typeof briefingContent) => {
+    setBriefingContent(prev => ({
+      ...prev,
+      [content]: !prev[content]
+    }));
   };
 
   return (
@@ -167,7 +186,7 @@ const SettingsScreen = () => {
         </div>
       </div>
 
-      {/* Daily Briefing */}
+      {/* Enhanced Daily Briefing */}
       <div className="px-6 mb-20">
         <div className="bg-white rounded-3xl shadow-lg p-6">
           <h2 className="text-xl font-bold text-zeroclick-blue mb-4 flex items-center">
@@ -175,12 +194,13 @@ const SettingsScreen = () => {
             Daily Briefing
           </h2>
           
-          <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-2xl">
+          {/* Briefing Toggle */}
+          <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-2xl mb-4">
             <div className="flex items-center space-x-3">
               <Clock size={28} className="text-zeroclick-orange" />
               <div>
                 <p className="font-bold text-zeroclick-blue">Morning Briefing</p>
-                <p className="text-sm text-zeroclick-blue/70">Auto-play at 8:00 AM</p>
+                <p className="text-sm text-zeroclick-blue/70">Auto-play daily updates</p>
               </div>
             </div>
             
@@ -195,6 +215,56 @@ const SettingsScreen = () => {
               }`}></div>
             </button>
           </div>
+
+          {dailyBriefing && (
+            <>
+              {/* Briefing Time */}
+              <div className="mb-4">
+                <label className="block text-lg font-semibold text-zeroclick-blue mb-2">
+                  ⏰ Briefing Time
+                </label>
+                <input
+                  type="time"
+                  value={briefingTime}
+                  onChange={(e) => setBriefingTime(e.target.value)}
+                  className="w-full p-3 rounded-2xl border-2 border-gray-200 text-lg font-semibold text-zeroclick-blue"
+                />
+              </div>
+
+              {/* Briefing Content */}
+              <div>
+                <label className="block text-lg font-semibold text-zeroclick-blue mb-3">
+                  📋 What to Include
+                </label>
+                <div className="space-y-3">
+                  {[
+                    { key: 'weather', icon: '🌤️', label: 'Weather Update' },
+                    { key: 'news', icon: '📰', label: 'Top News Headlines' },
+                    { key: 'horoscope', icon: '🔮', label: 'Daily Horoscope' },
+                    { key: 'healthTips', icon: '❤️', label: 'Health Tips' },
+                    { key: 'reminders', icon: '📅', label: 'Today\'s Reminders' }
+                  ].map((item) => (
+                    <div key={item.key} className="flex items-center justify-between p-3 bg-gray-50 rounded-2xl">
+                      <div className="flex items-center space-x-3">
+                        <span className="text-2xl">{item.icon}</span>
+                        <span className="font-semibold text-zeroclick-blue">{item.label}</span>
+                      </div>
+                      <button
+                        onClick={() => handleBriefingContentChange(item.key as keyof typeof briefingContent)}
+                        className={`w-12 h-6 rounded-full transition-all ${
+                          briefingContent[item.key as keyof typeof briefingContent] ? 'bg-green-500' : 'bg-gray-300'
+                        }`}
+                      >
+                        <div className={`w-4 h-4 bg-white rounded-full transition-all ${
+                          briefingContent[item.key as keyof typeof briefingContent] ? 'translate-x-7' : 'translate-x-1'
+                        }`}></div>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
 

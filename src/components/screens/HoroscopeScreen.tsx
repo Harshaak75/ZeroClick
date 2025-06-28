@@ -1,12 +1,14 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Volume2 } from 'lucide-react';
 import BottomNavigation from '@/components/BottomNavigation';
+import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 
 const HoroscopeScreen = () => {
   const navigate = useNavigate();
   const [selectedSign, setSelectedSign] = useState('aries');
+  const { speak, isSpeaking } = useTextToSpeech();
   
   const zodiacSigns = {
     aries: { emoji: '♈', name: 'Aries', dates: 'Mar 21 - Apr 19' },
@@ -24,16 +26,21 @@ const HoroscopeScreen = () => {
   };
 
   const horoscopes = {
-    aries: "Today brings positive energy and new opportunities. Your confidence will help you overcome any challenges. Lucky color: Red 🔴",
-    taurus: "A peaceful day ahead with focus on family and home. Financial matters look promising. Lucky color: Green 🟢",
-    gemini: "Communication is key today. Reach out to old friends and strengthen relationships. Lucky color: Yellow 🟡",
-    cancer: "Your intuition is especially strong today. Trust your instincts in important decisions. Lucky color: Blue 🔵",
-    leo: "Leadership opportunities may arise. Your creative energy is at its peak today. Lucky color: Orange 🟠",
-    virgo: "Attention to detail will pay off. Focus on health and wellness activities. Lucky color: Brown 🤎"
+    aries: "Today brings positive energy and new opportunities. Your confidence will help you overcome any challenges. Lucky color: Red",
+    taurus: "A peaceful day ahead with focus on family and home. Financial matters look promising. Lucky color: Green",
+    gemini: "Communication is key today. Reach out to old friends and strengthen relationships. Lucky color: Yellow",
+    cancer: "Your intuition is especially strong today. Trust your instincts in important decisions. Lucky color: Blue",
+    leo: "Leadership opportunities may arise. Your creative energy is at its peak today. Lucky color: Orange",
+    virgo: "Attention to detail will pay off. Focus on health and wellness activities. Lucky color: Brown"
   };
 
   const handleReadAloud = () => {
-    console.log('Reading horoscope aloud...');
+    const signData = zodiacSigns[selectedSign as keyof typeof zodiacSigns];
+    const horoscope = horoscopes[selectedSign as keyof typeof horoscopes] || 
+      "The stars align favorably for you today. Stay positive and embrace new opportunities that come your way.";
+    
+    const textToRead = `Here is your horoscope for ${signData.name}. ${horoscope}`;
+    speak(textToRead);
   };
 
   return (
@@ -49,7 +56,7 @@ const HoroscopeScreen = () => {
         <h1 className="text-2xl font-bold text-purple-700">🔮 Horoscope</h1>
         <button 
           onClick={handleReadAloud}
-          className="bg-purple-500 rounded-full p-3 shadow-md"
+          className={`bg-purple-500 rounded-full p-3 shadow-md ${isSpeaking ? 'animate-pulse' : ''}`}
         >
           <Volume2 size={24} className="text-white" />
         </button>
@@ -120,7 +127,9 @@ const HoroscopeScreen = () => {
           <div className="text-center mt-6">
             <button
               onClick={handleReadAloud}
-              className="bg-purple-500 text-white px-8 py-4 rounded-2xl font-bold text-lg flex items-center space-x-3 mx-auto shadow-lg"
+              className={`bg-purple-500 text-white px-8 py-4 rounded-2xl font-bold text-lg flex items-center space-x-3 mx-auto shadow-lg ${
+                isSpeaking ? 'animate-pulse' : ''
+              }`}
             >
               <Volume2 size={24} />
               <span>🔈 Read My Horoscope</span>

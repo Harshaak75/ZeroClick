@@ -1,15 +1,19 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mic, Info } from 'lucide-react';
+import { Mic, MicOff, Info } from 'lucide-react';
 import FeatureGrid from '@/components/FeatureGrid';
 import BottomNavigation from '@/components/BottomNavigation';
 import UpcomingTasks from '@/components/UpcomingTasks';
+import { useTextToSpeech } from '@/hooks/useTextToSpeech';
+import { useVoiceRecording } from '@/hooks/useVoiceRecording';
 
 const HomeScreen = () => {
   const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [greeting, setGreeting] = useState('');
+  const { speak, stop, isSpeaking } = useTextToSpeech();
+  const { isListening, startListening } = useVoiceRecording();
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -28,8 +32,23 @@ const HomeScreen = () => {
   }, [currentTime]);
 
   const handleVoiceCommand = () => {
-    // Voice command functionality would be implemented here
-    console.log('Voice command activated');
+    if (isListening || isSpeaking) {
+      stop();
+      return;
+    }
+
+    const welcomeMessage = `${greeting} Harsha! How can I help you today? You can say things like: show me reminders, read today's news, or tell me my horoscope.`;
+    speak(welcomeMessage);
+    
+    // Start listening after the welcome message
+    setTimeout(() => {
+      startListening();
+    }, 3000);
+  };
+
+  const handleTestVoice = () => {
+    const testMessage = "Hello! This is your voice assistant. I can read aloud any content and listen to your voice commands. How does this sound?";
+    speak(testMessage);
   };
 
   return (
@@ -54,10 +73,35 @@ const HomeScreen = () => {
       <div className="flex justify-center mb-8">
         <button
           onClick={handleVoiceCommand}
-          className="mic-button w-24 h-24 flex items-center justify-center"
+          className={`mic-button w-24 h-24 flex items-center justify-center ${
+            isListening ? 'animate-pulse bg-red-500' : ''
+          } ${isSpeaking ? 'animate-bounce' : ''}`}
           aria-label="Voice Command Button"
         >
-          <Mic size={40} className="text-white" />
+          {isListening ? (
+            <MicOff size={40} className="text-white" />
+          ) : (
+            <Mic size={40} className="text-white" />
+          )}
+        </button>
+      </div>
+
+      {/* Voice Status */}
+      {(isListening || isSpeaking) && (
+        <div className="text-center mb-6">
+          <p className="text-lg font-bold text-zeroclick-blue">
+            {isSpeaking ? '🔊 Speaking...' : '🎤 Listening...'}
+          </p>
+        </div>
+      )}
+
+      {/* Test Voice Button */}
+      <div className="flex justify-center mb-6">
+        <button
+          onClick={handleTestVoice}
+          className="bg-zeroclick-mint text-white px-6 py-3 rounded-2xl font-bold text-lg shadow-lg"
+        >
+          🔈 Test Voice
         </button>
       </div>
 
