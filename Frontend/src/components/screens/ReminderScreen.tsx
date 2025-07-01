@@ -39,7 +39,8 @@ const ReminderScreen = () => {
       category: 'yoga',
       icon: '🧘',
       completed: true
-    }
+    },
+    
   ]);
 
   const deleteReminder = (id: string) => {
@@ -55,7 +56,7 @@ const ReminderScreen = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zeroclick-peach to-white">
+    <div className="min-h-screen pb-[2.6rem] bg-gradient-to-br from-zeroclick-peach to-white">
       {/* Header */}
       <div className="flex items-center justify-between px-6 pt-12 pb-6">
         <button 
@@ -78,7 +79,7 @@ const ReminderScreen = () => {
 
       {/* Reminders List */}
       <div className="px-6 mb-20">
-        <h2 className="text-xl font-bold text-zeroclick-blue mb-4">Today's Reminders</h2>
+        <h2 className="text-[1.7rem] font-bold text-zeroclick-blue mb-4">Today's Reminders</h2>
         
         {reminders.map((reminder) => (
           <div
@@ -87,10 +88,10 @@ const ReminderScreen = () => {
               reminder.completed ? 'opacity-60' : ''
             }`}
           >
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-2">
               <div className="flex items-center space-x-4">
                 <div className="text-3xl">{reminder.icon}</div>
-                <div>
+                <div className=''>
                   <h3 className={`font-bold text-zeroclick-blue ${reminder.completed ? 'line-through' : ''}`}>
                     {reminder.title}
                   </h3>
@@ -98,13 +99,13 @@ const ReminderScreen = () => {
                 </div>
               </div>
               
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center justify-between space-x-2">
                 <button
                   onClick={() => toggleComplete(reminder.id)}
-                  className={`px-4 py-2 rounded-full font-bold ${
+                  className={`px-4 py-2 text-[1rem] rounded-full font-bold ${
                     reminder.completed
-                      ? 'bg-green-500 text-white'
-                      : 'bg-zeroclick-yellow text-zeroclick-blue'
+                      ? ' text-green-800'
+                      : ' text-zeroclick-blue'
                   }`}
                 >
                   {reminder.completed ? '✅ Done' : '⏰ Pending'}

@@ -44,7 +44,7 @@ const HoroscopeScreen = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white">
+    <div className="min-h-screen pb-[1.5rem] bg-gradient-to-br from-purple-50 to-white">
       {/* Header */}
       <div className="flex items-center justify-between px-6 pt-12 pb-6">
         <button 
@@ -127,12 +127,12 @@ const HoroscopeScreen = () => {
           <div className="text-center mt-6">
             <button
               onClick={handleReadAloud}
-              className={`bg-purple-500 text-white px-8 py-4 rounded-2xl font-bold text-lg flex items-center space-x-3 mx-auto shadow-lg ${
+              className={`bg-purple-500 text-white px-8 py-4 rounded-2xl font-bold text-[1rem] flex items-center space-x-3 mx-auto shadow-lg ${
                 isSpeaking ? 'animate-pulse' : ''
               }`}
             >
               <Volume2 size={24} />
-              <span>🔈 Read My Horoscope</span>
+              <span>Read My Horoscope</span>
             </button>
           </div>
         </div>

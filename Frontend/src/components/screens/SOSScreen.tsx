@@ -25,7 +25,7 @@ const SOSScreen = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-white">
+    <div className="min-h-screen pb-[5rem] bg-gradient-to-br from-red-50 to-white">
       {/* Header */}
       <div className="flex items-center justify-between px-6 pt-12 pb-6">
         <button 
@@ -44,12 +44,12 @@ const SOSScreen = () => {
           <div className="mb-8">
             <button
               onClick={handleSOSPress}
-              className="sos-button w-48 h-48 flex items-center justify-center"
+              className="sos-button w-[10rem] h-[10rem] flex items-center justify-center"
               aria-label="Emergency SOS Button"
             >
               <div className="text-center">
-                <div className="text-6xl mb-2">🆘</div>
-                <span className="text-white font-bold text-2xl">SOS</span>
+                <div className="text-7xl mb-2">🆘</div>
+                {/* <span className="text-white font-bold text-4xl">SOS</span> */}
               </div>
             </button>
           </div>
@@ -98,12 +98,12 @@ const SOSScreen = () => {
               </p>
             </div>
 
-            <div className="flex space-x-4">
+            <div className="flex items-center space-x-4">
               <button
                 onClick={confirmSOS}
-                className="flex-1 bg-red-600 text-white rounded-2xl p-4 font-bold text-lg"
+                className="flex flex-col bg-red-600 text-white rounded-2xl p-4 font-bold text-[1.05rem]"
               >
-                ✅ Yes, Send Alert
+                 Yes, Send Alert
               </button>
               <button
                 onClick={cancelSOS}

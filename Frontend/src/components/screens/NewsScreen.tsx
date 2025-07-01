@@ -64,7 +64,7 @@ const NewsScreen = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zeroclick-peach to-white">
+    <div className="min-h-screen pb-[3rem] bg-gradient-to-br from-zeroclick-peach to-white">
       {/* Header */}
       <div className="flex items-center justify-between px-6 pt-12 pb-6">
         <button 
@@ -120,33 +120,37 @@ const NewsScreen = () => {
           </p>
 
           {/* Navigation */}
-          <div className="flex justify-between items-center">
-            <button
-              onClick={prevNews}
-              className="bg-zeroclick-mint text-white px-6 py-3 rounded-full font-bold"
-              disabled={currentNews === 0}
-            >
-              ← Previous
-            </button>
+<div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 sm:space-x-4 p-4">
+  <button
+    onClick={prevNews}
+    className="bg-zeroclick-mint text-white rounded-full font-bold w-full sm:w-auto py-3 px-4"
+    disabled={currentNews === 0}
+  >
+    <div className="flex items-center gap-2 justify-center">
+      <div className="">←</div>
+      <div className="">Previous</div>
+    </div>
+  </button>
 
-            <button
-              onClick={handleReadAloud}
-              className={`bg-zeroclick-orange text-white px-6 py-3 rounded-full font-bold flex items-center space-x-2 ${
-                isSpeaking ? 'animate-pulse' : ''
-              }`}
-            >
-              <Volume2 size={20} />
-              <span>🔈 Read Aloud</span>
-            </button>
+  <button
+    onClick={handleReadAloud}
+    className={`bg-zeroclick-orange text-white px-6 py-3 rounded-full font-bold flex items-center space-x-2 ${
+      isSpeaking ? 'animate-pulse' : ''
+    } w-full sm:w-auto justify-center`}
+  >
+    <Volume2 size={20} />
+    <span>🔈 Read Aloud</span>
+  </button>
 
-            <button
-              onClick={nextNews}
-              className="bg-zeroclick-mint text-white px-6 py-3 rounded-full font-bold"
-              disabled={currentNews === news.length - 1}
-            >
-              Next →
-            </button>
-          </div>
+  <button
+    onClick={nextNews}
+    className="bg-zeroclick-mint text-white px-6 py-3 rounded-full font-bold w-full sm:w-auto py-3 px-4"
+    disabled={currentNews === news.length - 1}
+  >
+    Next →
+  </button>
+</div>
+
         </div>
       </div>
 

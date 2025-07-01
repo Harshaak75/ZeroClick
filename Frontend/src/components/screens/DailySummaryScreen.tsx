@@ -43,7 +43,7 @@ const DailySummaryScreen = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zeroclick-peach to-white">
+    <div className="min-h-screen pb-[2.5rem] bg-gradient-to-br from-zeroclick-peach to-white">
       {/* Header */}
       <div className="flex items-center justify-between px-6 pt-12 pb-6">
         <button 
@@ -52,7 +52,7 @@ const DailySummaryScreen = () => {
         >
           <ArrowLeft size={24} className="text-zeroclick-blue" />
         </button>
-        <h1 className="text-2xl font-bold text-zeroclick-blue">📊 Daily Summary</h1>
+        <h1 className="text-[1.4rem] font-bold text-zeroclick-blue">📊 Daily Summary</h1>
         <button 
           onClick={handleReadAloud}
           className="bg-zeroclick-orange rounded-full p-3 shadow-md"

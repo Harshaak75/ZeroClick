@@ -45,7 +45,7 @@ const SettingsScreen = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zeroclick-peach to-white">
+    <div className="min-h-screen pb-[2.5rem] bg-gradient-to-br from-zeroclick-peach to-white">
       {/* Header */}
       <div className="flex items-center justify-between px-6 pt-12 pb-6">
         <button 

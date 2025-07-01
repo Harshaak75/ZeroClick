@@ -52,7 +52,7 @@ const HomeScreen = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zeroclick-peach to-white">
+    <div className="min-h-screen bg-gradient-to-br from-zeroclick-peach to-white pb-[2.5rem]">
       {/* Header with Greeting */}
       <div className="px-6 pt-12 pb-6">
         <div className="text-center">
@@ -112,14 +112,14 @@ const HomeScreen = () => {
       <FeatureGrid />
 
       {/* Gesture Help Button */}
-      <div className="fixed top-4 right-4">
+      {/* <div className="fixed top-10 right-4">
         <button 
           className="bg-zeroclick-light-blue rounded-full p-3 shadow-lg"
           aria-label="Help and Gestures"
         >
           <Info size={24} className="text-zeroclick-blue" />
         </button>
-      </div>
+      </div> */}
 
       {/* Bottom Navigation */}
       <BottomNavigation currentScreen="home" />
