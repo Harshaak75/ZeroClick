@@ -25,14 +25,21 @@ const HoroscopeScreen = () => {
     pisces: { emoji: '♓', name: 'Pisces', dates: 'Feb 19 - Mar 20' }
   };
 
-  const horoscopes = {
-    aries: "Today brings positive energy and new opportunities. Your confidence will help you overcome any challenges. Lucky color: Red",
-    taurus: "A peaceful day ahead with focus on family and home. Financial matters look promising. Lucky color: Green",
-    gemini: "Communication is key today. Reach out to old friends and strengthen relationships. Lucky color: Yellow",
-    cancer: "Your intuition is especially strong today. Trust your instincts in important decisions. Lucky color: Blue",
-    leo: "Leadership opportunities may arise. Your creative energy is at its peak today. Lucky color: Orange",
-    virgo: "Attention to detail will pay off. Focus on health and wellness activities. Lucky color: Brown"
-  };
+const horoscopes = {
+  aries: "Today brings positive energy and new opportunities. Your confidence will help you overcome any challenges. Lucky color: Red",
+  taurus: "A peaceful day ahead with focus on family and home. Financial matters look promising. Lucky color: Green",
+  gemini: "Communication is key today. Reach out to old friends and strengthen relationships. Lucky color: Yellow",
+  cancer: "Your intuition is especially strong today. Trust your instincts in important decisions. Lucky color: Blue",
+  leo: "Leadership opportunities may arise. Your creative energy is at its peak today. Lucky color: Orange",
+  virgo: "Attention to detail will pay off. Focus on health and wellness activities. Lucky color: Brown",
+  libra: "Balance is crucial today. You may find yourself resolving conflicts and bringing harmony. Lucky color: Pink",
+  scorpio: "Emotional depth and passion define your day. A good time to focus on long-term goals. Lucky color: Maroon",
+  sagittarius: "Adventure calls! Take a chance on something new and exciting. Lucky color: Purple",
+  capricorn: "Hard work pays off. Stay focused and you'll see results in career or finances. Lucky color: Grey",
+  aquarius: "Think outside the box. Innovation and creativity will lead to success. Lucky color: Turquoise",
+  pisces: "Compassion and empathy guide your actions today. A great time for artistic or spiritual pursuits. Lucky color: Sea green"
+};
+
 
   const handleReadAloud = () => {
     const signData = zodiacSigns[selectedSign as keyof typeof zodiacSigns];
@@ -80,7 +87,7 @@ const HoroscopeScreen = () => {
           🌟 Select Your Sign
         </h2>
         <div className="grid grid-cols-3 gap-3">
-          {Object.entries(zodiacSigns).slice(0, 6).map(([key, sign]) => (
+          {Object.entries(zodiacSigns).slice(0, 12  ).map(([key, sign]) => (
             <button
               key={key}
               onClick={() => setSelectedSign(key)}

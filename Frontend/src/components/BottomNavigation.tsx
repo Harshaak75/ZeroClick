@@ -10,9 +10,9 @@ const BottomNavigation = ({ currentScreen }: BottomNavigationProps) => {
   const navigate = useNavigate();
 
   const navItems = [
-    { id: 'home', icon: Home, label: '🏠 Home', route: '/' },
-    { id: 'reminders', icon: Calendar, label: '📅 Tasks', route: '/reminders' },
-    { id: 'settings', icon: Settings, label: '⚙️ Settings', route: '/settings' },
+    { id: 'home', icon: Home, label: 'Home', route: '/' },
+    { id: 'reminders', icon: Calendar, label: 'Tasks', route: '/reminders' },
+    { id: 'settings', icon: Settings, label: 'Settings', route: '/settings' },
   ];
 
   const [isButtonNavigation, setIsButtonNavigation] = useState(false); // Detect if system navigation buttons are used
@@ -50,7 +50,7 @@ const BottomNavigation = ({ currentScreen }: BottomNavigationProps) => {
 
   return (
     <div
-      className={`fixed bottom-0 pb-7 left-0 right-0 bg-white border-t-2 border-zeroclick-orange/20 px-4 py-3 transition-all duration-300 ${
+      className={`fixed bottom-0 pb-9 left-0 right-0 bg-white border-t-2 border-zeroclick-orange/20 px-4 py-3 transition-all duration-300 ${
         isButtonNavigation ? (isVisible ? 'translate-y-0' : '-translate-y-full') : 'translate-y-0'
       }`}
     >
@@ -70,7 +70,7 @@ const BottomNavigation = ({ currentScreen }: BottomNavigationProps) => {
               }`}
               aria-label={item.label}
             >
-              <IconComponent size={24} />
+              <IconComponent  size={24} />
               <span className="text-xs font-semibold">{item.label}</span>
             </button>
           );
