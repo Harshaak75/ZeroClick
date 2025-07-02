@@ -57,7 +57,7 @@ const HomeScreen = () => {
       <div className="px-6 pt-12 pb-6">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-zeroclick-blue mb-2">
-            {greeting}, Harsha! 
+            {greeting}, Karan! 
           </h1>
           <p className="text-lg text-zeroclick-blue/70 font-medium">
             {currentTime.toLocaleDateString('en-IN', { 
