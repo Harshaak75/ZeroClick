@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'ZeroClick',
   webDir: 'dist',
   // server:{
-  //   url: 'http://172.16.0.67:8080/',
+  //   url: 'http://192.168.170.153:8080/',
   //   cleartext: true
   // }
 };
