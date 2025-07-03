@@ -1,94 +1,108 @@
+import { useState, useRef, useEffect } from 'react';
+import { Capacitor } from '@capacitor/core';
+import { SpeechRecognition as CapSpeech } from '@capacitor-community/speech-recognition';
 
-import { useState, useRef } from 'react';
+
+const createWebRecognizer = (): SpeechRecognition | null => {
+  const Ctor: any =
+    (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+  return Ctor ? new Ctor() : null;
+};
 
 export const useVoiceRecording = () => {
-  const [isRecording, setIsRecording] = useState(false);
   const [isListening, setIsListening] = useState(false);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const chunksRef = useRef<Blob[]>([]);
+  const [transcript, setTranscript] = useState('');
+  const webRecognizerRef = useRef<any>(null);
+  const platform = Capacitor.getPlatform(); // "web", "android", "ios"
 
-  const startRecording = async () => {
+  const ensurePermission = async () => {
+    const { available } = await CapSpeech.available();
+    if (!available) {
+      alert('Speech recognition not available on this device.');
+      return false;
+    }
+
+    const perm = await CapSpeech.checkPermissions();
+    if (perm.speechRecognition !== 'granted') {
+      const requested = await CapSpeech.requestPermissions();
+      if (requested.speechRecognition !== 'granted') {
+        alert('Permission denied');
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const startListening = async () => {
+    if (isListening) return;
+
+    if (platform === 'web') {
+      const rec = createWebRecognizer();
+      if (!rec) {
+        alert('SpeechRecognition is not supported in this browser.');
+        return;
+      }
+      webRecognizerRef.current = rec;
+
+      rec.lang = 'en-US';
+      rec.continuous = false;
+      rec.interimResults = false;
+
+      rec.onstart = () => setIsListening(true);
+      rec.onresult = (e: SpeechRecognitionEvent) => {
+        const text = Array.from(e.results)
+          .map(r => r[0].transcript)
+          .join(' ');
+        setTranscript(text.trim());
+        setIsListening(false);
+      };
+      rec.onerror = () => setIsListening(false);
+      rec.onend = () => setIsListening(false);
+
+      rec.start();
+      return;
+    } if (!(await ensurePermission())) return;
+
+    setIsListening(true);
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream);
-      chunksRef.current = [];
-
-      mediaRecorderRef.current.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          chunksRef.current.push(event.data);
-        }
-      };
-
-      mediaRecorderRef.current.onstop = () => {
-        const audioBlob = new Blob(chunksRef.current, { type: 'audio/wav' });
-        // Here you would typically send to speech recognition service
-        console.log('Audio recorded:', audioBlob);
-        setIsRecording(false);
-        setIsListening(false);
-      };
-
-      mediaRecorderRef.current.start();
-      setIsRecording(true);
-      setIsListening(true);
-    } catch (error) {
-      console.error('Error starting recording:', error);
+      const { matches } = await CapSpeech.start({
+        language: 'en-US',
+        maxResults: 1,
+        partialResults: false,
+        prompt: 'Speak now…',
+        popup: true,
+      });
+      if (matches && matches.length) setTranscript(matches[0]);
+    } catch (err) {
+      console.error('Native SR error:', err);
+    } finally {
+      setIsListening(false);
     }
   };
 
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
-    }
-  };
-
-  const startListening = () => {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      const recognition = new SpeechRecognition();
-      
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = 'en-US';
-
-      recognition.onstart = () => {
-        setIsListening(true);
-        console.log('Voice recognition started');
-      };
-
-      recognition.onresult = (event) => {
-        const transcript = Array.from(event.results)
-          .map(result => result[0])
-          .map(result => result.transcript)
-          .join('');
-        
-        console.log('Voice input:', transcript);
-        // Here you would process the voice command
-      };
-
-      recognition.onerror = (event) => {
-        console.error('Speech recognition error:', event.error);
-        setIsListening(false);
-      };
-
-      recognition.onend = () => {
-        setIsListening(false);
-      };
-
-      recognition.start();
-      return recognition;
+  const stopListening = async () => {
+    if (!isListening) return;
+    if (platform === 'web') {
+      webRecognizerRef.current?.stop();
     } else {
-      console.log('Speech recognition not supported, falling back to recording');
-      startRecording();
-      return null;
+      await CapSpeech.stop();
     }
+    setIsListening(false);
   };
+
+  useEffect(() => {
+    return () => {
+      CapSpeech.removeAllListeners();
+      if (webRecognizerRef.current) {
+        webRecognizerRef.current.stop();
+      }
+    };
+  }, []);
 
   return {
-    isRecording,
     isListening,
-    startRecording,
-    stopRecording,
-    startListening
+    transcript,
+    startListening,
+    stopListening,
   };
 };
