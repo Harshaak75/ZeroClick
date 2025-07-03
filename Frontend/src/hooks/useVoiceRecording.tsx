@@ -102,6 +102,7 @@ export const useVoiceRecording = () => {
   return {
     isListening,
     transcript,
+    setTranscript,
     startListening,
     stopListening,
   };
