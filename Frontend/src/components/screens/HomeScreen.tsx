@@ -6,6 +6,8 @@ import BottomNavigation from '@/components/BottomNavigation';
 import UpcomingTasks from '@/components/UpcomingTasks';
 import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 import { useVoiceRecording } from '@/hooks/useVoiceRecording';
+import { useTranslation } from 'react-i18next';
+
 
 const HomeScreen = () => {
   const navigate = useNavigate();
@@ -13,6 +15,8 @@ const HomeScreen = () => {
   const [greeting, setGreeting] = useState('');
   const { speak, stop, isSpeaking } = useTextToSpeech();
   const { isListening, transcript, startListening, stopListening } = useVoiceRecording();
+
+  const {t} = useTranslation();
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -57,14 +61,14 @@ const HomeScreen = () => {
       {/* Greeting Header */}
       <div className="px-6 pt-12 pb-6 text-center">
         <h1 className="text-3xl font-bold text-zeroclick-blue mb-2">
-          {greeting}, Harsha!
+          {t(greeting)}, {t('Harsha')}!
         </h1>
         <p className="text-lg text-zeroclick-blue/70">
-          {currentTime.toLocaleDateString('en-IN', {
+          {t(currentTime.toLocaleDateString('en-IN', {
             weekday: 'long',
             day: 'numeric',
             month: 'long',
-          })}
+          }))}
         </p>
       </div>
 
@@ -104,7 +108,7 @@ const HomeScreen = () => {
           }
           className="bg-zeroclick-mint text-white px-5 py-3 rounded-2xl font-semibold shadow-md"
         >
-          🔈 Test Voice
+          🔈 {t('Test Voice')}
         </button>
       </div>
 

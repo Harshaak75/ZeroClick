@@ -1,5 +1,7 @@
 
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { usePersistedLanguage } from '@/hooks/usePersistedLanguage';
 
 interface Feature {
   id: string;
@@ -56,6 +58,8 @@ const features: Feature[] = [
 
 const FeatureGrid = () => {
   const navigate = useNavigate();
+  usePersistedLanguage();
+  const {t} = useTranslation();
 
   return (
     <div className="px-4 mb-20">
@@ -71,7 +75,7 @@ const FeatureGrid = () => {
               {feature.icon}
             </div>
             <span className="text-lg font-bold text-zeroclick-blue text-center">
-              {feature.title}
+              {t(feature.title)}
             </span>
           </button>
         ))}

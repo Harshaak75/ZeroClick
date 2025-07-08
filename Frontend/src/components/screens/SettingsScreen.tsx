@@ -101,7 +101,7 @@
 //   return (
 //     <div className="min-h-screen pb-[2.5rem] bg-gradient-to-br from-zeroclick-peach to-white">
 //       <div className="flex items-center justify-between px-6 pt-12 pb-6">
-//         <button 
+//         <button
 //           onClick={() => navigate('/')}
 //           className="bg-white rounded-full p-3 shadow-md"
 //         >
@@ -312,23 +312,39 @@
 
 // export default SettingsScreen;
 
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Preferences } from '@capacitor/preferences';
-import { ArrowLeft, Volume2, QrCode, Clock, X } from 'lucide-react';
-import BottomNavigation from '@/components/BottomNavigation';
-import { useTextToSpeech } from '@/hooks/useTextToSpeech';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Preferences } from "@capacitor/preferences";
+import { ArrowLeft, Volume2, QrCode, Clock, X } from "lucide-react";
+import BottomNavigation from "@/components/BottomNavigation";
+import { useTextToSpeech } from "@/hooks/useTextToSpeech";
+
+import { useTranslation } from "react-i18next";
+import i18n from "../../i18n";
 
 const SettingsScreen = () => {
   const navigate = useNavigate();
   const { speak } = useTextToSpeech();
 
+  const { t } = useTranslation();
+
+  const changeLanguage = async (lang: string) => {
+    await i18n.changeLanguage(lang);
+    await Preferences.set({ key: "lang", value: lang });
+  };
+
+  useEffect(() => {
+    Preferences.get({ key: "lang" }).then(({ value }) => {
+      if (value) i18n.changeLanguage(value);
+    });
+  }, []);
+
   /* ---------- persistent state ---------- */
-  const [selectedLanguage, setSelectedLanguage] = useState('english');
+  const [selectedLanguage, setSelectedLanguage] = useState("english");
   const [voiceSpeed, setVoiceSpeed] = useState(50);
   const [volume, setVolume] = useState(80);
   const [dailyBriefing, setDailyBriefing] = useState(true);
-  const [briefingTime, setBriefingTime] = useState('08:00');
+  const [briefingTime, setBriefingTime] = useState("08:00");
   const [briefingContent, setBriefingContent] = useState({
     weather: true,
     news: true,
@@ -351,13 +367,13 @@ const SettingsScreen = () => {
   /* ---------- load settings once ---------- */
   useEffect(() => {
     (async () => {
-      setSelectedLanguage(await readPref('selectedLanguage', 'english'));
-      setVoiceSpeed(await readPref('voiceSpeed', 50));
-      setVolume(await readPref('volume', 80));
-      setDailyBriefing(await readPref('dailyBriefing', true));
-      setBriefingTime(await readPref('briefingTime', '08:00'));
+      setSelectedLanguage(await readPref("selectedLanguage", "english"));
+      setVoiceSpeed(await readPref("voiceSpeed", 50));
+      setVolume(await readPref("volume", 80));
+      setDailyBriefing(await readPref("dailyBriefing", true));
+      setBriefingTime(await readPref("briefingTime", "08:00"));
       setBriefingContent(
-        await readPref('briefingContent', {
+        await readPref("briefingContent", {
           weather: true,
           news: true,
           horoscope: true,
@@ -369,31 +385,33 @@ const SettingsScreen = () => {
   }, []);
 
   /* ---------- handlers that persist ---------- */
-  const handleLanguageChange = (lang: string) => {
+  const handleLanguageChange = async (lang: string) => {
     setSelectedLanguage(lang);
-    writePref('selectedLanguage', lang);
+    await Preferences.set({ key: "lang", value: lang });
+    i18n.changeLanguage(lang);
+    writePref("selectedLanguage", lang);
   };
   const handleVoiceSpeedChange = (v: number) => {
     setVoiceSpeed(v);
-    writePref('voiceSpeed', v);
+    writePref("voiceSpeed", v);
   };
   const handleVolumeChange = (v: number) => {
     setVolume(v);
-    writePref('volume', v);
+    writePref("volume", v);
   };
   const handleBriefingToggle = () => {
     const val = !dailyBriefing;
     setDailyBriefing(val);
-    writePref('dailyBriefing', val);
+    writePref("dailyBriefing", val);
   };
   const handleBriefingTimeChange = (t: string) => {
     setBriefingTime(t);
-    writePref('briefingTime', t);
+    writePref("briefingTime", t);
   };
   const handleBriefingContentChange = (key: keyof typeof briefingContent) => {
     const upd = { ...briefingContent, [key]: !briefingContent[key] };
     setBriefingContent(upd);
-    writePref('briefingContent', upd);
+    writePref("briefingContent", upd);
   };
   const handleTestVoice = () => {
     const msg = `Hello! This is your voice assistant speaking at ${voiceSpeed}% speed and ${volume}% volume. How does this sound to you?`;
@@ -402,9 +420,9 @@ const SettingsScreen = () => {
 
   /* ---------- language list ---------- */
   const languages = [
-    { id: 'english', name: 'English', flag: '🇬🇧', nativeName: 'English' },
-    { id: 'hindi', name: 'Hindi', flag: '🇮🇳', nativeName: 'हिंदी' },
-    { id: 'kannada', name: 'Kannada', flag: '🇮🇳', nativeName: 'ಕನ್ನಡ' },
+    { id: "en", name: "English", flag: "🇬🇧", nativeName: "English" },
+    { id: "hi", name: "Hindi", flag: "🇮🇳", nativeName: "हिंदी" },
+    { id: "kn", name: "Kannada", flag: "🇮🇳", nativeName: "ಕನ್ನಡ" },
   ];
 
   return (
@@ -437,12 +455,12 @@ const SettingsScreen = () => {
       {/* ---------- HEADER ---------- */}
       <div className="flex items-center justify-between px-6 pt-12 pb-6">
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate("/")}
           className="bg-white rounded-full p-3 shadow-md"
         >
           <ArrowLeft size={24} className="text-zeroclick-blue" />
         </button>
-        <h1 className="text-2xl font-bold text-zeroclick-blue">⚙️ Settings</h1>
+        <h1 className="text-2xl font-bold text-zeroclick-blue">⚙️ {t('Settings')}</h1>
         <div className="w-12" />
       </div>
 
@@ -451,7 +469,7 @@ const SettingsScreen = () => {
         <div className="bg-white rounded-3xl shadow-lg p-6">
           <h2 className="text-xl font-bold text-zeroclick-blue mb-4 flex items-center">
             <span className="text-2xl mr-3">👨‍⚕️</span>
-            Caregiver Connection
+            {t('Caregiver Connection')}
           </h2>
 
           <div className="bg-blue-50 rounded-2xl p-4 mb-4">
@@ -460,8 +478,10 @@ const SettingsScreen = () => {
                 <span className="text-white text-lg">👨‍⚕️</span>
               </div>
               <div>
-                <p className="font-bold text-zeroclick-blue">Dr. Rajesh Kumar</p>
-                <p className="text-sm text-blue-600">Connected Caregiver</p>
+                <p className="font-bold text-zeroclick-blue">
+                  {t('Dr. Rajesh Kumar')}
+                </p>
+                <p className="text-sm text-blue-600">{t('Connected Caregiver')}</p>
               </div>
             </div>
             <p className="text-sm text-zeroclick-blue/70">📞 +91 98765 43210</p>
@@ -472,7 +492,7 @@ const SettingsScreen = () => {
             className="w-full bg-zeroclick-orange text-white rounded-2xl py-3 font-bold flex items-center justify-center space-x-3"
           >
             <QrCode size={24} />
-            <span>📱 Link New Caregiver</span>
+            <span>📱 {t('Link New Caregiver')}</span>
           </button>
         </div>
       </div>
@@ -482,7 +502,7 @@ const SettingsScreen = () => {
         <div className="bg-white rounded-3xl shadow-lg p-6">
           <h2 className="text-xl font-bold text-zeroclick-blue mb-4 flex items-center">
             <span className="text-2xl mr-3">🌍</span>
-            Language / भाषा
+            {t(' Language')}
           </h2>
           <div className="space-y-3">
             {languages.map((l) => (
@@ -491,8 +511,8 @@ const SettingsScreen = () => {
                 onClick={() => handleLanguageChange(l.id)}
                 className={`w-full p-4 rounded-2xl border-2 transition-all ${
                   selectedLanguage === l.id
-                    ? 'border-zeroclick-orange bg-orange-50'
-                    : 'border-gray-200 bg-white'
+                    ? "border-zeroclick-orange bg-orange-50"
+                    : "border-gray-200 bg-white"
                 }`}
               >
                 <div className="flex items-center space-x-4">
@@ -518,13 +538,13 @@ const SettingsScreen = () => {
         <div className="bg-white rounded-3xl shadow-lg p-6">
           <h2 className="text-xl font-bold text-zeroclick-blue mb-4 flex items-center">
             <span className="text-2xl mr-3">🔊</span>
-            Voice Settings
+            {t('Voice Settings')}
           </h2>
 
           {/* Speed */}
           <div className="mb-6">
             <label className="block text-lg font-semibold text-zeroclick-blue mb-3">
-              🐌 Speech Speed 🐰
+              🐌 {t('Speech Speed')} 🐰
             </label>
             <div className="bg-gray-100 rounded-2xl p-4">
               <input
@@ -532,15 +552,13 @@ const SettingsScreen = () => {
                 min={0}
                 max={100}
                 value={voiceSpeed}
-                onChange={(e) =>
-                  handleVoiceSpeedChange(Number(e.target.value))
-                }
+                onChange={(e) => handleVoiceSpeedChange(Number(e.target.value))}
                 className="w-full h-3 bg-zeroclick-orange rounded-full appearance-none cursor-pointer"
               />
               <div className="flex justify-between text-sm text-zeroclick-blue/70 mt-2">
-                <span>Slow</span>
+                <span>{t('Slow')}</span>
                 <span>{voiceSpeed}%</span>
-                <span>Fast</span>
+                <span>{t('Fast')}</span>
               </div>
             </div>
           </div>
@@ -548,7 +566,7 @@ const SettingsScreen = () => {
           {/* Volume */}
           <div className="mb-6">
             <label className="block text-lg font-semibold text-zeroclick-blue mb-3">
-              🔇 Volume 🔊
+              🔇 {t('Volume')} 🔊
             </label>
             <div className="bg-gray-100 rounded-2xl p-4">
               <input
@@ -560,9 +578,9 @@ const SettingsScreen = () => {
                 className="w-full h-3 bg-zeroclick-orange rounded-full appearance-none cursor-pointer"
               />
               <div className="flex justify-between text-sm text-zeroclick-blue/70 mt-2">
-                <span>Quiet</span>
+                <span>{t('Quiet')}</span>
                 <span>{volume}%</span>
-                <span>Loud</span>
+                <span>{t('Loud')}</span>
               </div>
             </div>
           </div>
@@ -572,7 +590,7 @@ const SettingsScreen = () => {
             className="w-full bg-zeroclick-mint text-white rounded-2xl py-3 font-bold flex items-center justify-center space-x-3"
           >
             <Volume2 size={24} />
-            <span>🎵 Test Voice</span>
+            <span>🎵 {t('Test Voice')}</span>
           </button>
         </div>
       </div>
@@ -582,28 +600,30 @@ const SettingsScreen = () => {
         <div className="bg-white rounded-3xl shadow-lg p-6">
           <h2 className="text-xl font-bold text-zeroclick-blue mb-4 flex items-center">
             <span className="text-2xl mr-3">📢</span>
-            Daily Briefing
+            {t('Daily Briefing')}
           </h2>
 
           <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-2xl mb-4">
             <div className="flex items-center space-x-3">
               <Clock size={28} className="text-zeroclick-orange" />
               <div>
-                <p className="font-bold text-zeroclick-blue">Morning Briefing</p>
+                <p className="font-bold text-zeroclick-blue">
+                  {t('Morning Briefing')}
+                </p>
                 <p className="text-sm text-zeroclick-blue/70">
-                  Auto-play daily updates
+                  {t('Auto-play daily updates')}
                 </p>
               </div>
             </div>
             <button
               onClick={handleBriefingToggle}
               className={`w-16 h-8 rounded-full transition-all ${
-                dailyBriefing ? 'bg-green-500' : 'bg-gray-300'
+                dailyBriefing ? "bg-green-500" : "bg-gray-300"
               }`}
             >
               <div
                 className={`w-6 h-6 bg-white rounded-full transition-all ${
-                  dailyBriefing ? 'translate-x-9' : 'translate-x-1'
+                  dailyBriefing ? "translate-x-9" : "translate-x-1"
                 }`}
               ></div>
             </button>
@@ -613,7 +633,7 @@ const SettingsScreen = () => {
             <>
               <div className="mb-4">
                 <label className="block text-lg font-semibold text-zeroclick-blue mb-2">
-                  ⏰ Briefing Time
+                  ⏰ {t('Briefing Time')}
                 </label>
                 <input
                   type="time"
@@ -624,16 +644,22 @@ const SettingsScreen = () => {
               </div>
 
               <label className="block text-lg font-semibold text-zeroclick-blue mb-3">
-                📋 What to Include
+                📋 {t('What to Include')}
               </label>
               <div className="space-y-3">
-                {([
-                  { key: 'weather', icon: '🌤️', label: 'Weather Update' },
-                  { key: 'news', icon: '📰', label: 'Top News Headlines' },
-                  { key: 'horoscope', icon: '🔮', label: 'Daily Horoscope' },
-                  { key: 'healthTips', icon: '❤️', label: 'Health Tips' },
-                  { key: 'reminders', icon: '📅', label: "Today's Reminders" },
-                ] as const).map((item) => (
+                {(
+                  [
+                    { key: "weather", icon: "🌤️", label: "Weather Update" },
+                    { key: "news", icon: "📰", label: "Top News Headlines" },
+                    { key: "horoscope", icon: "🔮", label: "Daily Horoscope" },
+                    { key: "healthTips", icon: "❤️", label: "Health Tips" },
+                    {
+                      key: "reminders",
+                      icon: "📅",
+                      label: "Today's Reminders",
+                    },
+                  ] as const
+                ).map((item) => (
                   <div
                     key={item.key}
                     className="flex items-center justify-between p-3 bg-gray-50 rounded-2xl"
@@ -641,7 +667,7 @@ const SettingsScreen = () => {
                     <div className="flex items-center space-x-3">
                       <span className="text-2xl">{item.icon}</span>
                       <span className="font-semibold text-zeroclick-blue">
-                        {item.label}
+                        {t(item.label)}
                       </span>
                     </div>
                     <button
@@ -651,9 +677,11 @@ const SettingsScreen = () => {
                         )
                       }
                       className={`w-12 h-6 rounded-full transition-all ${
-                        briefingContent[item.key as keyof typeof briefingContent]
-                          ? 'bg-green-500'
-                          : 'bg-gray-300'
+                        briefingContent[
+                          item.key as keyof typeof briefingContent
+                        ]
+                          ? "bg-green-500"
+                          : "bg-gray-300"
                       }`}
                     >
                       <div
@@ -661,8 +689,8 @@ const SettingsScreen = () => {
                           briefingContent[
                             item.key as keyof typeof briefingContent
                           ]
-                            ? 'translate-x-7'
-                            : 'translate-x-1'
+                            ? "translate-x-7"
+                            : "translate-x-1"
                         }`}
                       />
                     </button>

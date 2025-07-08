@@ -19,6 +19,10 @@ import Shake from "shake.js";
 import { Mic } from "lucide-react";
 import { useVoiceRecording } from "./hooks/useVoiceRecording"; // adjust the path
 
+// language convertion
+import '../src/i18n'
+// import { AppNavigation } from './src/navigation/AppNavigation'; 
+
 const queryClient = new QueryClient();
 
 // Wrapper needed to use `useNavigate` outside of routes

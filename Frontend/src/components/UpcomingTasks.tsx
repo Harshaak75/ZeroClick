@@ -1,5 +1,7 @@
+import { useTranslation } from "react-i18next";
 
 const UpcomingTasks = () => {
+  const {t} = useTranslation();
   const tasks = [
     { time: '2:00 PM', task: '💊 Take Medicine', type: 'medicine', urgent: true },
     { time: '3:30 PM', task: '📞 Call Doctor', type: 'call', urgent: false },
@@ -9,7 +11,7 @@ const UpcomingTasks = () => {
   return (
     <div className="mx-4 mb-6">
       <h2 className="text-xl font-bold text-zeroclick-blue mb-4 text-center">
-        🕐 Today's Tasks
+        🕐 {t("Today's Tasks")}
       </h2>
       <div className="bg-white rounded-2xl shadow-lg p-4">
         {tasks.map((task, index) => (
@@ -25,14 +27,14 @@ const UpcomingTasks = () => {
               <span className="text-2xl">{task.task.split(' ')[0]}</span>
               <div>
                 <p className="font-semibold text-zeroclick-blue">
-                  {task.task.substring(2)}
+                  {t(task.task.substring(2))}
                 </p>
                 <p className="text-sm text-zeroclick-blue/70">{task.time}</p>
               </div>
             </div>
             {task.urgent && (
               <div className="bg-zeroclick-red text-white px-3 py-1 rounded-full text-xs font-bold">
-                NOW
+                {t('NOW')}
               </div>
             )}
           </div>
